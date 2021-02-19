@@ -13,15 +13,15 @@ app.use(bodyParser.urlencoded({
 }));
 
 //Import Routes
-const roomRoute = require("../routes/roomsRoute");
-const reviewRoute = require("../routes/reviewsRoute");
+// const roomRoute = require("../routes/roomsRoute");
+// const reviewRoute = require("../routes/reviewsRoute");
 
 //middleware
-app.use(express.json());
+// app.use(express.json());
 
 //Route Middlewares
-app.use("/rooms", roomRoute);
-app.use("/reviews", reviewRoute);
+// app.use("/rooms", roomRoute);
+// app.use("/reviews", reviewRoute);
 
 
 //Read CSV file and uploand into MongoDB Atlas
@@ -79,88 +79,84 @@ mongodb.connect(
 // );
 
 
-//Create Schema for each collection
-// const reviewSchema = {
-//   listing_id: Number,
-//   id: Number,
-//   date: Date,
-//   reviewer_id: Number,
-//   reviewer_name: String,
-//   comments: String
-// }
+// Create Schema for each collection
+const reviewSchema = {
+  listing_id: Number,
+  id: Number,
+  date: Date,
+  reviewer_id: Number,
+  reviewer_name: String,
+  comments: String
+}
 //
-// const Review = mongoose.model("Review", reviewSchema);
+const Review = mongoose.model("Review", reviewSchema);
 //
-// const listingSchema = {
-//   id: Number,
-//   name: String,
-//   host_id: Number,
-//   neighbourhood_group: String,
-//   neighbourhood: String,
-//   latitude: Number,
-//   longitude: Number,
-//   room_type: String,
-//   price: Number,
-//   minimum_nights: Number,
-//   number_of_reviews: Number,
-//   last_review: Date,
-//   reviews_per_month: Number,
-//   calculated_host_listings_count: Number,
-//   availability_365: Number
-// }
+const listingSchema = {
+  id: Number,
+  name: String,
+  host_id: Number,
+  neighbourhood_group: String,
+  neighbourhood: String,
+  latitude: Number,
+  longitude: Number,
+  room_type: String,
+  price: Number,
+  minimum_nights: Number,
+  number_of_reviews: Number,
+  last_review: Date,
+  reviews_per_month: Number,
+  calculated_host_listings_count: Number,
+  availability_365: Number
+}
 //
-// const Listing = mongoose.model("Listing", listingSchema);
+const Listing = mongoose.model("Listing", listingSchema);
 //
 
 // RESTful APIs
 /////////////////////////////////Requests Targetting all rooms.
-// app.route("/airbnb")
+app.get("/airbnb/findAll", function(req, res) {
+  Room.find(function(err, foundReviews) {
+    if (!err) {
+      res.send(foundReviews);
+    } else {
+      console.log(err);
+    }
+  });
+})
+
+app.post("/airbnb/ingest", function(req, res) {
+  const newReview = new Review({
+    listing_id: req.body.listing_id,
+    id: req.body.id,
+    date: req.body.date,
+    reviewer_id: req.body.reviewer_id,
+    reviewer_name: req.body.reviewer_name,
+    comments: req.body.comments
+  });
+  newReview.save(function(err) {
+    if (!err) {
+      res.send("Successfully added a new review!");
+    } else {
+      res.send(err);
+    }
+  });
+})
 //
-//   .get("/findAll",function(req, res) {
-//     Room.find(function(err, foundReviews) {
-//       if (!err) {
-//         res.send(foundReviews);
-//       } else {
-//         console.log(err);
-//       }
-//     });
-//   })
-//
-// .post("/ingest", function(req, res) {
-//   const newReview = new Review({
-//     listing_id: req.body.listing_id,
-//     id: req.body.id,
-//     date: req.body.date,
-//     reviewer_id: req.body.reviewer_id,
-//     reviewer_name: req.body.reviewer_name,
-//     comments: req.body.comments
-//   });
-//   newReview.save(function(err) {
-//     if (!err) {
-//       res.send("Successfully added a new review!");
-//     } else {
-//       res.send(err);
-//     }
-//   });
-// })
-//
-// .delete("/clear", function(req, res) {
-//   Room.deleteMany(function(err) {
-//     if (!err) {
-//       res.send("Successfully deleted all review!");
-//     } else {
-//       res.send(err);
-//     }
-//   });
-// });
+app.delete("/clear", function(req, res) {
+  Room.deleteMany(function(err) {
+    if (!err) {
+      res.send("Successfully deleted all review!");
+    } else {
+      res.send(err);
+    }
+  });
+});
 //
 //
 //
 // /////////////////////////////////Requests Targetting a specific review.
 //
-// app.route("/airbnb/:reviewID")
-//
-//   .get(function(req, res) {
+// app.get("/airbnb/:reviewID", function(req, res) {
 //     Review.findOne({
 //       id: req.params.reviewID
 //     }, function(err, foundReviews) {

@@ -1,5 +1,9 @@
 const router = require("express").Router();
 
+var path = require("path");
+var Router = require('./modules/router/router');
+var router = new Router(path.join(__dirname,'routes'));
+
 router.use (function(req, res, next){
   console.log(req.url, "@", Date.now());
   next();
